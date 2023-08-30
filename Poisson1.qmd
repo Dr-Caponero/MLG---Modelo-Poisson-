@@ -1,0 +1,760 @@
+---
+title: "Relatório: Modelo Poisson"
+author: "Jeff Caponero"
+format:
+    pdf:
+      toc: true
+      toc-title: Sumário
+      colorlinks: true
+      documentclass: report
+      papersize: letter
+      number-sections: false
+      geometry:
+        - top=30mm
+        - left=30mm
+        - right=20mm
+        - bottom=20mm
+        - heightrounded
+      fig-pos: "H"
+      fig-align: center
+      lang: pt-BR
+      # fontfamily: libertinus
+      fontsize: 12pt
+      include-in-header:
+      - text: |
+          \usepackage{caption}
+          \usepackage{fontspec}
+          \usepackage{xcolor}
+          \usepackage{indentfirst}
+          \captionsetup[table]{name=Tabela}
+---
+
+```{r pacotes&dados}
+#| echo: false
+#| warning: false
+# PACOTES ----
+library(pacman)
+
+pacman::p_load(tidyverse,  readit, summarytools,
+               kableExtra, moYments, ggpubr, formattable, gridExtra, 
+               glue, corrplot, sessioninfo, readxl, writexl, ggthemes,
+               patchwork,  plotly, gglm, ggplot2, tidymodels)
+
+```
+
+## Introdução
+
+Por muitos anos, os modelos lineares convencionais foram amplamente empregados para tentar descrever uma variedade de fenômenos aleatórios.
+Mesmo quando os dados em estudo não exibiam uma distribuição normal apropriada para as análises, frequentemente sugeria-se a aplicação de alguma forma de transformação para alcançar a normalidade desejada.
+
+Essencialmente, a abordagem tradicional visava ampliar as opções de distribuição da variável de interesse.
+Isso permitiria que a variável fosse incorporada à família de distribuições exponenciais uniparamétricas, possibilitando uma maior flexibilidade na relação funcional entre a média da variável e o preditor linear $\eta$.
+
+Contudo, essa abordagem tinha suas limitações.
+A busca incessante por normalidade nem sempre era viável, e a forçada adaptação dos dados a uma distribuição normal não se mostrava estatisticamente justificável.
+
+À medida que o entendimento estatístico evoluiu, surgiu uma ampliação conceitual dos modelos lineares.
+Surgiu, por exemplo, a classe dos Modelos Lineares Generalizados (MLGs), que englobam os modelos lineares tradicionais como casos particulares.
+Os MLGs permitem acomodar diversas distribuições de respostas, não se restringindo apenas à normal.
+Essa mudança de paradigma abriu espaço para a modelagem de dados que não seguem distribuições normais, como dados de contagem (Poisson), binomiais e proporções, entre outros.
+
+A menção à "família exponencial uniparamétrica de distribuições" refere-se a um conjunto de distribuições que engloba várias distribuições comuns, incluindo a normal, Poisson, Binomial e Gama.
+Essa família de distribuições possui propriedades matemáticas vantajosas, conferindo eficiência e flexibilidade à modelagem estatística.
+
+
+## Modelo Poisson
+
+Seja Y uma variável aleatória com distribuição Poisson de média $\mu$, denotamos Y ∼ Poi(µ).
+A função densidade de Y é dada por
+
+$$f(y;\mu;\phi) = exp \left \{ y.log(\mu)-\mu-log(y!) \right\}$$
+
+Logo, aplicando a definição de Família Exponencial adotada para MLG, temos que:
+
+$\theta = log(\mu)$,
+
+$\phi = 1$,
+
+$b(\theta) = e^\theta$ e
+
+$c(y, \phi) = -log(y!)$.
+
+Para a estimação de parâmetros é possível estabelecer um procedimento iterativo, junto com a introdução do conceito de desvio, o qual tem sido amplamente empregado na avaliação da adequação dos Modelos Lineares Generalizados (MLGs).
+Esse conceito também desempenha um papel crucial no desenvolvimento de resíduos e métricas de diagnóstico.
+
+Nesse processo iterativo, os parâmetros do modelo são ajustados repetidamente para otimizar a adaptação aos dados observados.
+O conceito de desvio, por sua vez, é uma medida que reflete a discrepância entre os dados observados e as previsões do modelo.
+Ao minimizar esse desvio, os parâmetros do modelo são calibrados de modo a se ajustarem melhor aos dados.
+
+Além disso, o conceito de desvio tem uma importância significativa na avaliação da qualidade do ajuste dos MLGs.
+Medir o desvio entre os valores observados e os previstos pelo modelo é fundamental para determinar o quão bem o modelo se adapta aos dados.
+Essa avaliação é essencial para verificar se o modelo é apropriado para a situação em análise.
+
+Os resíduos, que são as diferenças entre os valores observados e os valores ajustados pelo modelo, são derivados do conceito de desvio.
+Esses resíduos podem fornecer insights valiosos sobre a qualidade do ajuste do modelo e a presença de padrões não capturados pelo modelo.
+Através dos resíduos, é possível identificar possíveis discrepâncias entre as previsões do modelo e os dados reais.
+
+Além disso, a utilização de medidas de diagnóstico baseadas nos desvios e resíduos é essencial para identificar possíveis problemas com o modelo, como valores atípicos, falta de ajuste ou violações das suposições do modelo.
+Essas medidas permitem a detecção de anomalias que poderiam afetar a confiabilidade das inferências feitas com base no modelo.
+
+Esses resultados podem mais propriamente ser alcançados pelo uso de fuções de ligações canônicas, o que por sua vez, oferece uma série de vantagens, uma delas é a garantia de que a função de verossimilhança ($L(\beta)$) seja uma função côncava.
+Isso, por sua vez, simplifica a obtenção de diversos resultados assintóticos.
+A propriedade de concavidade da função de verossimilhança traz consigo implicações significativas, como a obtenção mais direta de resultados assintóticos.
+
+Uma vantagem concreta é observada na garantia da unicidade da estimativa de máxima verossimilhança de ($\beta$), desde que essa estimativa exista.
+Isso significa que, quando utilizamos ligações canônicas, há uma única estimativa que maximiza a verossimilhança dos dados observados.
+Isso torna o processo de estimação mais estável e confiável, pois não há ambiguidade na determinação dos parâmetros ótimos.
+
+No entanto, quando se trata de ligações não canônicas, a situação é mais complexa.
+Em 1976, Wedderburn discutiu as condições sob as quais a concavidade da função ($L(\beta)$) ainda pode ser estabelecida em tais cenários.
+Essa discussão é importante, pois a concavidade da função de verossimilhança é um pressuposto fundamental para muitos resultados estatísticos assintóticos, que são cálculos aproximados que se tornam mais precisos com um grande número de observações.
+
+## Exemplo de aplicação - Anomalias Cromossômicas
+
+Em 1976, Roy J. Purrott e Elaine Reeder realizaram uma pesquisa intitulada "The Effect of Changes in Dose Rate on the Yield of Chromosome Aberrations in Human Lymphocytes Exposed to Gamma Radiation." (Efeito da variação na taxa de dosagem na produção de anomalias cromossômicas em linfócitos humanos expostos a radiação gama.)
+
+O estudo em questão aborda um tópico crucial na avaliação dos efeitos da exposição à radiação em organismos vivos, mais especificamente, o uso da dosimetria citogenética para quantificar e compreender as alterações cromossômicas que ocorrem como resultado da radiação ionizante.
+O foco principal recai sobre as anomalias cromossômicas dicêntricas em linfócitos humanos, que se tornaram um indicador valioso para avaliar a exposição à radiação e estabelecer limites seguros em situações de radiação ambiental ou acidentes nucleares.
+
+O estudo teve suas raízes no trabalho pioneiro de Bender e Gooch, que propuseram que a frequência de anomalias cromossômicas dicêntricas em linfócitos humanos poderia ser utilizada como uma espécie de dosímetro biológico para a radiação.
+Desde então, a dosimetria citogenética evoluiu e se consolidou como uma técnica confiável na proteção radiológica.
+Ao longo dos anos, o laboratório responsável pelo estudo investigou mais de 200 casos de possíveis superexposições à radiação, demonstrando a utilidade e a aplicabilidade prática desse método.
+
+A escolha das anomalias cromossômicas dicêntricas como alvo de estudo se justifica por sua frequência relativamente alta quando comparada a outras anomalias induzidas pela radiação, bem como por sua baixa incidência natural em células não irradiadas.
+Além disso, os dicêntricos possuem uma aparência característica e são frequentemente acompanhados por deleções acêntricas, o que fornece uma maneira adicional de confirmar sua identificação.
+No entanto, é importante ressaltar que a formação de dicêntricos é afetada pela taxa de dose da radiação, devido ao mecanismo de formação por quebra em duas etapas, o que significa que a proximidade das quebras em termos de espaço e tempo influencia sua formação.
+
+Um aspecto crucial explorado no estudo é o tempo durante o qual os danos cromossômicos permanecem reativos.
+As estimativas variam consideravelmente, refletindo a diversidade de sistemas vegetais e animais estudados, bem como a falta de consenso para células humanas.
+Diferentes pesquisadores encontraram resultados divergentes sobre o tempo necessário para o reparo das anomalias cromossômicas após a exposição à radiação.
+Essa variação pode ser atribuída às diferenças entre sistemas estudados e à complexidade dos processos de reparo celular.
+
+A influência da dosimetria na formação de dicêntricos também é um aspecto fundamental abordado pelo estudo.
+Estudos iniciais nessa área foram prejudicados por culturas prolongadas e pela estimulação prévia das células antes da exposição à radiação.
+A metodologia foi aprimorada ao longo do tempo, estabelecendo que as células devem ser analisadas na primeira metáfase, que ocorre 48-54 horas após a exposição à radiação, e que as células devem ser irradiadas antes da estimulação.
+Experimentos realizados por diferentes grupos demonstraram que a frequência de dicêntricos é influenciada pela taxa de dose, apresentando padrões complexos em relação à dose total.
+
+Um estudo específico dentro do escopo maior do trabalho examinou de forma detalhada como a taxa de dose afeta a formação de anomalias cromossômicas em linfócitos humanos.
+Diferentes doses de radiação foram administradas a taxas de dose variadas, e os resultados revelaram que tanto a frequência de dicêntricos quanto a de anomalias totais diminuem à medida que a taxa de dose diminui.
+A análise estatística dos dados foi realizada com base em um modelo matemático que considera a contribuição de diferentes componentes na formação das anomalias cromossômicas.
+Observou-se que a formação de dicêntricos diminuiu significativamente em taxas de dose mais baixas para doses mais altas.
+Além disso, as anomalias cromossômicas acentricas também mostraram padrões semelhantes, sugerindo que muitas delas são causadas por um processo de dois hits, ou seja, por duas lesões cromossômicas em momentos distintos.
+
+Uma das conclusões importantes desse estudo é que a taxa de dose de radiação ionizante de baixa TLE (Transferência Linear de Energia) tem um impacto substancial na formação de anomalias cromossômicas.
+Especificamente, os resultados indicam que em taxas de dose abaixo de 150 rad por hora, a frequência de anomalias cromossômicas é afetada de maneira significativa.
+Isso é relevante porque muitas vezes a dosimetria citogenética é usada para estimar a dose equivalente total do corpo em casos de superexposição à radiação.
+Em situações de exposição a radiações de doses baixas, a influência da taxa de dose é menos pronunciada, pois a maioria das anomalias cromossômicas é induzida por trilhas únicas de partículas.
+
+O estudo contribui para a compreensão mais ampla dos efeitos da radiação ionizante nas células humanas e fornece insights valiosos para o desenvolvimento de estratégias de proteção radiológica e avaliação de riscos.
+Além disso, ressalta a importância de considerar a taxa de dose ao usar a dosimetria citogenética como ferramenta de avaliação em cenários de exposição à radiação, especialmente em situações de baixas doses e taxas de dose variáveis.
+Isso pode ter implicações importantes em ambientes de risco radiológico e segurança nuclear.
+
+### Reanálise dos dados
+
+#### Sobre o conjunto de dados
+
+Os dados se referem a 27 experimentos publicados no trabalho mencionado anteriormente e é composto pelas seguintes variáveis:
+
+**ca** - Quantidade de células com anomalias, dentre as células amostradas;  
+**cells** - Número de células amostradas;  
+**doseamt** - Quantidade total de radiação a que as células foram expostas;  
+**doserate** - Taxa de administração da radiação gama.
+
+#### Análise descritiva
+
+A tabela a seguir apresenta uma breve análise descritiva desses dados.
+
+```{r}
+#| echo: false
+#| warning: false
+#| mensage: false
+
+library(faraway)
+library(ggplot2)
+data(dicentric, package="faraway")
+
+
+dicentric|>
+   summarytools::descr(
+    stats = c("min", "q1", "med", "mean","q3", "max",  "sd", "cv", "Skewness", "Kurtosis"),
+    justify = "c",
+    style = "rmarkdown",
+    transpose = T
+  )|>
+    kbl(
+    caption = "Medidas resumo dos dados",
+    digits = 2,
+    format.args=list(big.mark=".", decimal.mark=","),
+    align = "c", row.names = T, booktabs = T
+  )|>
+  kable_styling(
+    full_width = F, position = 'center', 
+    latex_options = c("striped", "HOLD_position", "scale_down", "repeat_header")
+  )|>
+  column_spec(1, bold = T
+              )|>
+  kable_material()
+
+```
+
+
+Verifica-se que tanto a quantidade total de células quanto as que apresentaram anomalias têm uma distribuição assimétrica, porém a variabilidade das células anômalas é bastante menor. 
+Percebe-se que as variáveis *doseamt* e *doserate* por serem variáveis categóricas que demonstam os niveis de radiação empregados no experimento não tem uma análise relevante. 
+Para facilitar a compreenção das medidas de células anômalas e celulas totais, apresentadas na Tabela 1, a Figura 1 mostra graficamente estas distribuições.
+
+
+```{r fig1:Histograma}
+#| echo: false
+#| warning: false
+#| fig-height: 4
+#| fig-width: 7
+
+g1 <- dicentric|>
+  ggplot() +
+  aes(x = ca) +
+  geom_histogram(
+    aes(y = ..density..),
+    bins = 8,
+    fill = "lightblue",
+    colour = "darkblue") +
+  geom_density(
+    alpha = 0.2,
+    fill = "blue",
+    colour = "blue") +
+  scale_y_continuous(
+    labels = scales::number_format(
+      big.mark = ".",
+      decimal.mark = ","
+    )) +
+  labs(
+    title = "Células Anômalas",
+    x = "Quantidade",
+    y = "Densidade"
+  )+theme_minimal(base_size = 7.5)
+
+b1 <- dicentric|>
+  ggplot(aes(y = ca)) +
+  geom_boxplot(col="darkblue", fill="skyblue", alpha = 0.5)+
+  labs(
+    title = "Células Anômalas",
+    x = "",
+    y = "Densidade"
+  )+theme_minimal(base_size = 7.5)
+
+
+g2 <- dicentric|>
+  ggplot() +
+  aes(x = cells) +
+  geom_histogram(
+    aes(y = ..density..),
+    fill = "lightblue",
+    colour = "darkblue",
+    # binwidth = 2
+    bins = 8
+    ) +
+  geom_density(
+    alpha = 0.2,
+    fill = "blue",
+    colour = "blue") +
+  scale_y_continuous(
+    labels = scales::number_format(
+      big.mark = ".",
+      decimal.mark = ","
+    )) +
+  labs(
+    title = "Células Totais",
+    x = "Quantidade",
+    y = "Densidade"
+  )+theme_minimal(base_size = 7.5)
+
+b2 <- dicentric|>
+  ggplot(aes(y = cells)) +
+  geom_boxplot(col="darkblue", fill="skyblue", alpha = 0.5)+
+  labs(
+    title = "Células Totais",
+    x = "",
+    y = "Densidade"
+  )+theme_minimal(base_size = 7.5)
+
+g1 + b1 + g2 + b2 + 
+  plot_layout(ncol = 2) + 
+  plot_annotation(
+    title = "Figura 1: Histogramas e Boxplots das variáveis em análise.",
+    tag_levels = c("A", "1"), tag_prefix = "", tag_sep = "",
+    tag_suffix = "") &
+  theme(
+    plot.tag.position = c(0.8, 0.8),
+    plot.tag = element_text(size = 12, hjust = 0, vjust = 0))
+```
+
+
+Os gráficos confirmam as observações anteriores acrescentado que em anbas as distribuições pode se verificar outliers, que por sua vez são mais frequentes dentre as células anômalas. Do histograma pode verificar ainda certa descontinuidade no número de células medido, o que pode indicar certa limitação da técnica de amostragem ou ser devido ao reduzido número de replicatas.
+
+\   
+\   
+
+**Figura 2: Interação entre a fração de anomalias e a dosimetria aplicada observadas.**
+
+```{r}
+#| echo: false
+#| warning: false
+#| fig-height: 3.5
+#| fig-width: 7
+rate<-dicentric$ca/dicentric$cells
+
+d1 <- with(dicentric, interaction.plot(doseamt, doserate, ca/cells, legend=TRUE, xlab= "Dose (hrad)", ylab="Fração de Anomalias", trace.label = "Adm. (rad/h)"))
+```
+
+A figura 2 indica que o aumento tanto da dosagem total quanto da taxa de adiministração da radiação tem efeito positivo no aumento da fração de anomalias observado.
+
+
+
+### Ajuste inferencial
+
+#### Função de ligação canônica
+
+Utilizando a função de ligação canônica para a qual $\eta = log (\mu)$ e procedendo um ajuste dos dados segundo um modelo poisson baseado em MLG temos o sequinte resutado descrito em uma tabela ANOVA.
+
+\   
+
+
+**Tabela 2: ANOVA do ajuste segundo o Modelo de Poisson aplicado.**
+
+
+```{r}
+#| echo: false
+#| warning: false
+#| fig-height: 3.5
+#| fig-width: 7
+
+dicentric$rate <- dicentric$ca/dicentric$cells
+
+fit4<-glm(ca~doserate + factor(doseamt) + doserate:factor(doseamt) 
+          + offset(log(cells)),family = poisson, dicentric)
+summary(fit4)
+```
+
+\   
+
+Nota-se que todos as variáveis do modelo foram significativas para o ajuste do modelo. Embora a variável taxa de administração (doserate) isoladamente apresentar uma significância abaixo dos níveis usuais, verifica-se que sua interação com a variável dose total (doseamt) é significativa em todos os níveis, sendo assim não é uma variável prescindível.
+Chama a atenção nessa análise, que o valor da *deviance* dos resíduos, embora bem abaixo do valor nulo é cerca do triplo do valor dos graus de liberdade, indicando que o ajuste ainda apresenta certa imprecisão.
+
+\    
+\    
+
+
+**Tabela 3: ANOVA do ajuste segundo o Modelo de Poisson aplicado, em comparação com o teste qui-quadrado.**
+
+```{r}
+#| echo: false
+#| warning: false
+#| fig-height: 3.5
+#| fig-width: 7
+
+anova(fit4, test="Chisq")
+```
+
+\   
+
+Observa-se novamente que todas as variáveis são necessárias para um bom ajuste do modelo. Entretanto, neste caso, verificou-se que o valor da *deviance* indica uma melhor bondade de ajuste.
+
+\  
+
+```{r}
+#| echo: false
+#| warning: false
+#| fig-height: 3.5
+#| fig-width: 7
+
+dicentric$ratefit <- fit4$fitted.values/dicentric$cells
+
+g1 <- dicentric|>
+  ggplot() +
+  aes(x = rate) +
+  geom_histogram(
+    aes(y = ..density..),
+    bins = 8,
+    fill = "lightblue",
+    colour = "darkblue") +
+  geom_density(
+    alpha = 0.2,
+    fill = "blue",
+    colour = "blue") +
+  scale_y_continuous(
+    labels = scales::number_format(
+      big.mark = ".",
+      decimal.mark = ","
+    )) +
+  labs(
+    title = "Anomalias Observadas",
+    x = "Fração",
+    y = "Densidade"
+  )+theme_minimal(base_size = 7.5)
+
+g2 <- dicentric|>
+  ggplot() +
+  aes(x = ratefit) +
+  geom_histogram(
+    aes(y = ..density..),
+    fill = "lightblue",
+    colour = "darkblue",
+    # binwidth = 2
+    bins = 8
+    ) +
+  geom_density(
+    alpha = 0.2,
+    fill = "blue",
+    colour = "blue") +
+  scale_y_continuous(
+    labels = scales::number_format(
+      big.mark = ".",
+      decimal.mark = ","
+    )) +
+  labs(
+    title = "Anomalias Ajustadas",
+    x = "Fração",
+    y = "Densidade"
+  )+theme_minimal(base_size = 7.5)
+
+
+
+g1 + g2 + 
+  plot_layout(ncol = 2) + 
+  plot_annotation(
+    title = "Figura 3: Histogramas das frações de anomalias.",
+    tag_levels = c("A", "1"), tag_prefix = "", tag_sep = "",
+    tag_suffix = "") &
+  theme(
+    plot.tag.position = c(0.8, 0.8),
+    plot.tag = element_text(size = 12, hjust = 0, vjust = 0))
+```
+
+A figura 3 corfirma a análise da tabela 2, uma vez que o lado direito da figura 3B evidencia a dificuldade de ajuste pelo modelo Poisson, já que nesses dados não há um decaimento observado.
+
+
+
+**Figura 4: Interação entre a fração de anomalias e a dosimetria aplicada ajustadas.**
+```{r}
+#| echo: false
+#| warning: false
+#| fig-height: 3.5
+#| fig-width: 7
+
+with(dicentric, interaction.plot(doseamt, doserate, ratefit, legend=TRUE, xlab= "Dose (hrad)", ylab="Fração de Anomalias", trace.label = "Adm. (rad/h)"))
+
+```
+
+Nota-se que a interação ajustada é mais previsível que aquela mostrada na Figura 2, referente aos dados observados.
+
+
+```{r}
+#| echo: false
+#| warning: false
+#| fig-height: 3.5
+#| fig-width: 7
+
+
+fit.model<-fit4
+X <- model.matrix(fit.model)
+n <- nrow(X)
+p <- ncol(X)
+w <- fit.model$weights
+W <- diag(w)
+H <- solve(t(X)%*%W%*%X)
+H <- sqrt(W)%*%X%*%H%*%t(X)%*%sqrt(W)
+h <- diag(H)
+td <- resid(fit.model,type="deviance")/sqrt((1-h))
+td <- as.data.frame(td)
+colnames(td) = "Resíduos"
+
+
+td|>
+   summarytools::descr(
+    stats = c("min", "q1", "med", "mean","q3", "max",  "sd", "cv", "Skewness", "Kurtosis"),
+    justify = "c",
+    style = "rmarkdown",
+    transpose = T
+  )|>
+    kbl(
+    caption = "Tabela 4: Medidas resumo dos resíduos",
+    digits = 2,
+    format.args=list(big.mark=".", decimal.mark=","),
+    align = "c", row.names = T, booktabs = T
+  )|>
+  kable_styling(
+    full_width = F, position = 'center', 
+    latex_options = c("striped", "HOLD_position", "scale_down", "repeat_header")
+  )|>
+  column_spec(1, bold = T
+              )|>
+  kable_material()
+
+```
+
+A tabela 4 mostra uma distribuição dos resíduos aproximada de uma distribuição normal.
+
+
+**Figura 5: Análise do resíduo componente do desvio pelos valores ajustados.**
+
+```{r}
+#| echo: false
+#| warning: false
+#| fig-height: 3.5
+#| fig-width: 7
+xy <- cbind(fit4$fitted, td)
+plot(xy, xlab="Valores Ajustados", ylab="Residuo componente do desvio", ylim=c(-2.5, 2.5))
+abline(h=c(-2,2))
+```
+
+\   
+
+**Figura 6: Análise do resíduo componente do desvio pelos valores observados.**
+
+```{r}
+#| echo: false
+#| warning: false
+#| fig-height: 3.5
+#| fig-width: 7
+plot(td, xlab="Observações", ylab="Residuo componente do desvio", ylim=c(-2.5, 2.5))
+abline(h=c(-2,2))
+```
+
+\   
+
+**Figura 7: Ajuste do modelo sob avaliação em relação ao modelo poisson.**
+
+```{r}
+#| echo: false
+#| warning: false
+#| fig-height: 3.5
+#| fig-width: 7
+fit.model<-fit4
+source("envel_pois.R")
+```
+Das figuras acima verifica-se que o modelo de Poisson ajustado pela função de ligação canônica não foi capaz de representar a variabilidade dos dados observados.
+
+#### Função de ligação alternativa
+
+Utilizando a função de ligação canônica para a qual $\eta = \sqrt{ (\mu)}$ e procedendo um ajuste dos dados segundo um modelo poisson baseado em MLG temos o sequinte resutado descrito em uma tabela ANOVA.
+
+\   
+
+
+**Tabela 5: ANOVA do ajuste segundo o Modelo de Poisson aplicado.**
+
+```{r}
+#| echo: false
+#| warning: false
+#| fig-height: 3.5
+#| fig-width: 7
+
+dicentric$rate <- dicentric$ca/dicentric$cells
+
+fit5<-glm(ca~doserate + factor(doseamt) + doserate:factor(doseamt) + offset(log(cells)),family = poisson(link="sqrt"),dicentric)
+summary(fit5)
+```
+
+\   
+
+Nota-se que todos as variáveis do modelo foram significativas para o ajuste do modelo. Embora a variável taxa de administração (doserate) isoladamente apresentar uma significância abaixo dos níveis usuais, verifica-se que sua interação com a variável dose total (doseamt) é significativa no nível 5 hrad, sendo assim não é uma variável prescindível.
+Chama a atenção nessa análise, que o valor da *deviance* dos resíduos, embora bem abaixo do valor nulo é muito superior ao valor dos graus de liberdade, indicando que o ajuste ainda apresenta certa imprecisão.
+
+\    
+\    
+
+
+**Tabela 6: ANOVA do ajuste segundo o Modelo de Poisson aplicado, em comparação com o teste qui-quadrado.**
+
+```{r}
+#| echo: false
+#| warning: false
+#| fig-height: 3.5
+#| fig-width: 7
+
+anova(fit5, test="Chisq")
+```
+
+\   
+
+Observa-se novamente que todas as variáveis são necessárias para um bom ajuste do modelo. Entretanto, neste caso, verificou-se que o valor da *deviance* indica uma melhor bondade de ajuste.
+
+\  
+
+```{r}
+#| echo: false
+#| warning: false
+#| fig-height: 3.5
+#| fig-width: 7
+
+dicentric$ratefit2 <- fit5$fitted.values/dicentric$cells
+
+g1 <- dicentric|>
+  ggplot() +
+  aes(x = rate) +
+  geom_histogram(
+    aes(y = ..density..),
+    bins = 8,
+    fill = "lightblue",
+    colour = "darkblue") +
+  geom_density(
+    alpha = 0.2,
+    fill = "blue",
+    colour = "blue") +
+  scale_y_continuous(
+    labels = scales::number_format(
+      big.mark = ".",
+      decimal.mark = ","
+    )) +
+  labs(
+    title = "Anomalias Observadas",
+    x = "Fração",
+    y = "Densidade"
+  )+theme_minimal(base_size = 7.5)
+
+g2 <- dicentric|>
+  ggplot() +
+  aes(x = ratefit2) +
+  geom_histogram(
+    aes(y = ..density..),
+    fill = "lightblue",
+    colour = "darkblue",
+    # binwidth = 2
+    bins = 8
+    ) +
+  geom_density(
+    alpha = 0.2,
+    fill = "blue",
+    colour = "blue") +
+  scale_y_continuous(
+    labels = scales::number_format(
+      big.mark = ".",
+      decimal.mark = ","
+    )) +
+  labs(
+    title = "Anomalias Ajustadas",
+    x = "Fração",
+    y = "Densidade"
+  )+theme_minimal(base_size = 7.5)
+
+
+
+g1 + g2 + 
+  plot_layout(ncol = 2) + 
+  plot_annotation(
+    title = "Figura 8: Histogramas das frações de anomalias.",
+    tag_levels = c("A", "1"), tag_prefix = "", tag_sep = "",
+    tag_suffix = "") &
+  theme(
+    plot.tag.position = c(0.8, 0.8),
+    plot.tag = element_text(size = 12, hjust = 0, vjust = 0))
+```
+
+A figura 8 corfirma a análise da tabela 5, uma vez que o lado esquerdo da figura 7B evidencia a dificuldade de ajuste pelo modelo Poisson, já que nesses dados não há um decaimento observado.
+
+
+
+**Figura 9: Interação entre a fração de anomalias e a dosimetria aplicada ajustadas.**
+```{r}
+#| echo: false
+#| warning: false
+#| fig-height: 3.5
+#| fig-width: 7
+
+with(dicentric, interaction.plot(doseamt, doserate, ratefit2, legend=TRUE, xlab= "Dose (hrad)", ylab="Fração de Anomalias", trace.label = "Adm. (rad/h)"))
+
+```
+
+Nota-se que a interação ajustada é mais previsível que aquela mostrada na Figura 2, referente aos dados observados.
+
+
+```{r}
+#| echo: false
+#| warning: false
+#| fig-height: 3.5
+#| fig-width: 7
+
+
+fit.model<-fit5
+X <- model.matrix(fit.model)
+n <- nrow(X)
+p <- ncol(X)
+w <- fit.model$weights
+W <- diag(w)
+H <- solve(t(X)%*%W%*%X)
+H <- sqrt(W)%*%X%*%H%*%t(X)%*%sqrt(W)
+h <- diag(H)
+td <- resid(fit.model,type="deviance")/sqrt((1-h))
+td <- as.data.frame(td)
+colnames(td) = "Resíduos"
+
+
+td|>
+   summarytools::descr(
+    stats = c("min", "q1", "med", "mean","q3", "max",  "sd", "cv", "Skewness", "Kurtosis"),
+    justify = "c",
+    style = "rmarkdown",
+    transpose = T
+  )|>
+    kbl(
+    caption = "Tabela 7: Medidas resumo dos resíduos",
+    digits = 2,
+    format.args=list(big.mark=".", decimal.mark=","),
+    align = "c", row.names = T, booktabs = T
+  )|>
+  kable_styling(
+    full_width = F, position = 'center', 
+    latex_options = c("striped", "HOLD_position", "scale_down", "repeat_header")
+  )|>
+  column_spec(1, bold = T
+              )|>
+  kable_material()
+
+```
+
+A tabela 7 mostra uma distribuição dos resíduos bastante aproximada de uma distribuição normal.
+
+\  
+
+**Figura 10: Análise do resíduo componente do desvio pelos valores ajustados.**
+
+```{r}
+#| echo: false
+#| warning: false
+#| fig-height: 3.5
+#| fig-width: 7
+xy <- cbind(fit5$fitted, td)
+plot(xy, xlab="Valores Ajustados", ylab="Residuo componente do desvio", ylim=c(-2.5, 2.5))
+abline(h=c(-2,2))
+```
+
+\  
+
+**Figura 11: Análise do resíduo componente do desvio pelos valores observados.**
+
+```{r}
+#| echo: false
+#| warning: false
+#| fig-height: 3.5
+#| fig-width: 7
+plot(td, xlab="Observações", ylab="Residuo componente do desvio", ylim=c(-2.5, 2.5))
+abline(h=c(-2,2))
+```
+\  
+**Figura 12: Ajuste do modelo sob avaliação em relação ao modelo poisson.**
+
+```{r}
+#| echo: false
+#| warning: false
+#| fig-height: 3.5
+#| fig-width: 7
+fit.model<-fit5
+source("envel_pois.R")
+```
+
+Das figuras acima verifica-se que o modelo de Poisson ajustado pela função de ligação alternativa também não foi capaz de representar a variabilidade dos dados observados.
+
+
+## Conclusões
+
+Verificou-se que a proposta de identificar o processo de contagens de células com anomalias após o tratamento de radiação com o modelo de Poisson, não obteve um bom ajuste mesmo com a utilização da função de ligação canônica (logarítimica) ou de uma função de ligação alternativa (raiz-quatrática).
+Uma fonte desta dificuldade deste ajuste é a aleatoriedade da quantidade de células totais amostradas que introduz uma variabilidade que o modelo não é capaz de explicar. Um possível modelo com melhor ajuste seria baseado na distribuição Beta, que por sua vez ajustaria a fração de células comprometidas e não a contagem delas.
