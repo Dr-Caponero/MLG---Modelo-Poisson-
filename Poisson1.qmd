@@ -44,22 +44,11 @@ pacman::p_load(tidyverse,  readit, summarytools,
 
 ## Introdução
 
-Por muitos anos, os modelos lineares convencionais foram amplamente empregados para tentar descrever uma variedade de fenômenos aleatórios.
-Mesmo quando os dados em estudo não exibiam uma distribuição normal apropriada para as análises, frequentemente sugeria-se a aplicação de alguma forma de transformação para alcançar a normalidade desejada.
+Por muitos anos, os modelos de regressão linear foram amplamente empregados para tentar descrever uma variedade de fenômenos aleatórios, mesmo quando os pressupostos desses modelos eram violados. Transformações na variável resposta eram realizadas a fim de contornar esses problemas, principalmente ao que tange a violação da normalidade, como a transformação Box-Cox. Concomitante a isto, propor uma solução cuja a estimação dos parâmetros dependesse de um processo iterativo seria muito custoso computacionalmente à época. 
 
-Essencialmente, a abordagem tradicional visava ampliar as opções de distribuição da variável de interesse.
-Isso permitiria que a variável fosse incorporada à família de distribuições exponenciais uniparamétricas, possibilitando uma maior flexibilidade na relação funcional entre a média da variável e o preditor linear $\eta$.
+A partir da década de 1970, onde ocorreu um desenvolvimento maior da capacidade computacional, foi possível propor outras abordagens para modelos de regressão. Surgiu uma ampliação conceitual dos modelos lineares, por exemplo, a classe dos Modelos Lineares Generalizados (MLGs), que englobam os modelos lineares tradicionais como casos particulares. Os MLGs permitem acomodar diversas distribuições de respostas, não se restringindo apenas à normal. Essa mudança de paradigma abriu espaço para a modelagem de dados que não seguem distribuições normais, como dados de contagem (Poisson), binomiais e proporções, entre outros.
 
-Contudo, essa abordagem tinha suas limitações.
-A busca incessante por normalidade nem sempre era viável, e a forçada adaptação dos dados a uma distribuição normal não se mostrava estatisticamente justificável.
-
-À medida que o entendimento estatístico evoluiu, surgiu uma ampliação conceitual dos modelos lineares.
-Surgiu, por exemplo, a classe dos Modelos Lineares Generalizados (MLGs), que englobam os modelos lineares tradicionais como casos particulares.
-Os MLGs permitem acomodar diversas distribuições de respostas, não se restringindo apenas à normal.
-Essa mudança de paradigma abriu espaço para a modelagem de dados que não seguem distribuições normais, como dados de contagem (Poisson), binomiais e proporções, entre outros.
-
-A menção à "família exponencial uniparamétrica de distribuições" refere-se a um conjunto de distribuições que engloba várias distribuições comuns, incluindo a normal, Poisson, Binomial e Gama.
-Essa família de distribuições possui propriedades matemáticas vantajosas, conferindo eficiência e flexibilidade à modelagem estatística.
+A menção à "família exponencial uniparamétrica de distribuições" refere-se a um conjunto de distribuições que engloba várias distribuições comuns, incluindo a normal, Poisson, Binomial e Gama. Essa família de distribuições possui propriedades matemáticas vantajosas, conferindo eficiência e flexibilidade à modelagem estatística.
 
 
 ## Modelo Poisson
