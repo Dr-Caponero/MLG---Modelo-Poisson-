@@ -1,6 +1,6 @@
 ---
 title: "Relatório: Modelo Poisson"
-author: "Jeff Caponero"
+author: "Jeff Caponero, Michel Miler Rocha dos Santos e Camille Menezes dos Santos"
 format:
     pdf:
       toc: true
