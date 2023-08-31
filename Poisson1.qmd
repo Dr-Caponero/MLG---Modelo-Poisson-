@@ -64,7 +64,7 @@ $\theta = log(\mu)$,
 
 $\phi = 1$,
 
-$b(\theta) = e^\theta$ e
+$b(\theta) = e^\theta$ 
 
 $c(y, \phi) = -log(y!)$.
 
@@ -90,7 +90,7 @@ Esses resultados podem mais propriamente ser alcançados pelo uso de fuções de
 Isso, por sua vez, simplifica a obtenção de diversos resultados assintóticos.
 A propriedade de concavidade da função de verossimilhança traz consigo implicações significativas, como a obtenção mais direta de resultados assintóticos.
 
-Uma vantagem concreta é observada na garantia da unicidade da estimativa de máxima verossimilhança de ($\beta$), desde que essa estimativa exista.
+Uma vantagem concreta é observada na garantia da unicidade da estimativa de máxima verossimilhança dos coeficientes ($\beta$'s), desde que essa estimativa exista.
 Isso significa que, quando utilizamos ligações canônicas, há uma única estimativa que maximiza a verossimilhança dos dados observados.
 Isso torna o processo de estimação mais estável e confiável, pois não há ambiguidade na determinação dos parâmetros ótimos.
 
@@ -144,7 +144,7 @@ Isso pode ter implicações importantes em ambientes de risco radiológico e seg
 
 Os dados se referem a 27 experimentos publicados no trabalho mencionado anteriormente e é composto pelas seguintes variáveis:
 
-**ca** - Quantidade de células com anomalias, dentre as células amostradas;  
+**ca** - Quantidade de cromossomos com anomalia;  
 **cells** - Número de células amostradas;  
 **doseamt** - Quantidade total de radiação a que as células foram expostas;  
 **doserate** - Taxa de administração da radiação gama.
@@ -187,7 +187,7 @@ dicentric|>
 ```
 
 
-Verifica-se que tanto a quantidade total de células quanto as que apresentaram anomalias têm uma distribuição assimétrica, porém a variabilidade das células anômalas é bastante menor. 
+Verifica-se que a quantidade total de células e a quantidade de cromossomos com anomalia têm uma distribuição assimétrica, já que a mediana e a média foram bastante distintas. O coeficiente de variação da quantidade total de células é alto, desse modo, há um grande variabilidade nessa variável, sendo até maior que a variabilidade presente na variável quantidade de cromossomos anômalos. 
 Percebe-se que as variáveis *doseamt* e *doserate* por serem variáveis categóricas que demonstam os niveis de radiação empregados no experimento não tem uma análise relevante. 
 Para facilitar a compreenção das medidas de células anômalas e celulas totais, apresentadas na Tabela 1, a Figura 1 mostra graficamente estas distribuições.
 
