@@ -291,7 +291,7 @@ rate<-dicentric$ca/dicentric$cells
 d1 <- with(dicentric, interaction.plot(doseamt, doserate, ca/cells, legend=TRUE, xlab= "Dose (hrad)", ylab="Fração de Anomalias", trace.label = "Adm. (rad/h)"))
 ```
 
-A Figura 2 indica que o aumento tanto da dosagem total quanto da taxa de administração da radiação tem efeito positivo no aumento da fração de anomalias observado.
+Através da Figura 2, é possível notar que com o aumento da dosagem total e da taxa de administração da radiação há um aumento da fração de anomalias.
 
 
 
