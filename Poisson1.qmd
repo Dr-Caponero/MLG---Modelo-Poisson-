@@ -307,9 +307,6 @@ Os dados foram submetidos a uma análise de ajuste ao modelo linear generalizado
 
 
 **Tabela 2: Ajuste segundo o Modelo de Poisson com função de ligação $\eta = log (\mu)$.**
-
-
-
 ```{r}
 #| echo: false
 #| warning: false
@@ -331,11 +328,10 @@ coefficients <- data.frame(
 
 coefficients|>
   kbl(
-    #caption = "Sumarização dos Modelos Ajustados de Regressão Linear Simples - RLS.",
     format.args=list(big.mark=".", decimal.mark=","),
     digits = 3, align = "c", row.names = F, booktabs = T,
     escape = FALSE,
-    col.names = c("Variável", "Coeficientes", "EP", "Estatística z", "Valor-p")
+    col.names = c(" ", "Coeficientes", "EP", "Estatística z", "Valor-p")
   )|>
   kable_styling(
     full_width = F, position = 'center', 
@@ -365,12 +361,26 @@ Quanto ao deviance dos resíduos deste modelo, juntamente com seus graus de libe
 #| fig-height: 3.5
 #| fig-width: 7
 
-anova(fit4, test="Chisq")
+data.frame(tidy(anova(fit4, test="Chisq"))) |>
+  kbl(
+    format.args=list(big.mark=".", decimal.mark=","),
+    digits = 3, align = "c", row.names = F, booktabs = T,
+    escape = FALSE,
+    col.names = c(" ", "GL", "Deviance", "GL resídual", "Resid. Deviance","Valor-p"),
+  )|>
+  kable_styling(
+    full_width = F, position = 'center', 
+    latex_options = c("striped", "HOLD_position", "repeat_header", "scale_down")
+  )|>
+  column_spec(1, bold = T
+  )|>
+  kable_material()
+
 ```
 
 \   
 
-Observa-se novamente que todas as variáveis são necessárias para um bom ajuste do modelo. Entretanto, neste caso, verificou-se que o valor da *deviance* indica uma melhor bondade de ajuste.
+Observa-se novamente que todas as variáveis são necessárias para um bom ajuste do modelo. Entretanto, neste caso, verificou-se que o valor do *deviance* indica uma melhor bondade de ajuste.
 
 \  
 
@@ -443,7 +453,8 @@ g1 + g2 +
     plot.tag = element_text(size = 12, hjust = 0, vjust = 0))
 ```
 
-A Figura 3 confirma a análise da Tabela 2, uma vez que o lado direito da Figura 3B evidencia a dificuldade de ajuste pelo modelo Poisson, já que nesses dados não há um decaimento observado.
+
+A Figura 3 reforça a conclusão obtida na Tabela 2, pois o gráfico à direita na Figura 3B claramente ilustra as limitações do modelo Poisson para se adequar aos dados, uma vez que não apresenta nenhum declínio visível.
 
 
 
@@ -549,25 +560,46 @@ Das figuras acima verifica-se que o modelo de Poisson ajustado pela função de 
 
 #### Função de ligação alternativa
 
-Utilizando a função de ligação canônica para a qual $\eta = \sqrt{ (\mu)}$ e procedendo um ajuste dos dados segundo um modelo poisson baseado em MLG temos o sequinte resutado descrito em uma tabela ANOVA.
+Os dados foram submetidos novamente ao ajuste do modelo linear generalizado com distribuição Poisson. Nesse contexto, a função de ligação utilizada foi $\eta = \sqrt(\mu)$. Os coeficientes obtidos a partir desse ajuste estão disponíveis na Tabela 5.
 
 \   
 
 
-**Tabela 5: ANOVA do ajuste segundo o Modelo de Poisson aplicado.**
-
+**Tabela 5: Ajuste segundo o Modelo de Poisson com função de ligação $\eta = \sqrt(\mu)$.**
 ```{r}
 #| echo: false
 #| warning: false
 #| fig-height: 3.5
 #| fig-width: 7
-
 dicentric$rate <- dicentric$ca/dicentric$cells
 
 fit5<-glm(ca~doserate + factor(doseamt) + doserate:factor(doseamt) + offset(log(cells)),family = poisson(link="sqrt"),dicentric)
-summary(fit5)
-```
 
+sum_fit5 <- summary(fit5)
+coefficients <- data.frame(
+  Variável = c("Intercepto", "doserate", "doseamt-2.5", "doseamt-5", "doserate:doseamt-2.5", "doserate:doseamt-5"),
+  Coeficientes = fit5$coefficients,
+  EP =  sum_fit5$coefficients[, "Std. Error"],
+  `Estatística z` = sum_fit5$coefficients[, "z value"],
+  `Pr(>|z|)` = sum_fit5$coefficients[, "Pr(>|z|)"]
+)
+
+coefficients|>
+  kbl(
+    format.args=list(big.mark=".", decimal.mark=","),
+    digits = 3, align = "c", row.names = F, booktabs = T,
+    escape = FALSE,
+    col.names = c(" ", "Coeficientes", "EP", "Estatística z", "Valor-p")
+  )|>
+  kable_styling(
+    full_width = F, position = 'center', 
+    latex_options = c("striped", "HOLD_position", "repeat_header", "scale_down")
+  )|>
+  column_spec(1, bold = T
+  )|>
+  kable_material()
+
+```
 \   
 
 Nota-se que todos as variáveis do modelo foram significativas para o ajuste do modelo. Embora a variável taxa de administração (doserate) isoladamente apresentar uma significância abaixo dos níveis usuais, verifica-se que sua interação com a variável dose total (doseamt) é significativa no nível 5 hrad, sendo assim não é uma variável prescindível.
@@ -577,7 +609,7 @@ Chama a atenção nessa análise, que o valor da *deviance* dos resíduos, embor
 \    
 
 
-**Tabela 6: ANOVA do ajuste segundo o Modelo de Poisson aplicado, em comparação com o teste qui-quadrado.**
+**Tabela 6: Ajuste segundo o Modelo de Poisson aplicado, em comparação com o teste qui-quadrado.**
 
 ```{r}
 #| echo: false
@@ -585,9 +617,22 @@ Chama a atenção nessa análise, que o valor da *deviance* dos resíduos, embor
 #| fig-height: 3.5
 #| fig-width: 7
 
-anova(fit5, test="Chisq")
-```
+data.frame(tidy(anova(fit5, test="Chisq"))) |>
+  kbl(
+    format.args=list(big.mark=".", decimal.mark=","),
+    digits = 3, align = "c", row.names = F, booktabs = T,
+    escape = FALSE,
+    col.names = c(" ", "GL", "Deviance", "GL resídual", "Resid. Deviance","Valor-p"),
+  )|>
+  kable_styling(
+    full_width = F, position = 'center', 
+    latex_options = c("striped", "HOLD_position", "repeat_header", "scale_down")
+  )|>
+  column_spec(1, bold = T
+  )|>
+  kable_material()
 
+```
 \   
 
 Observa-se novamente que todas as variáveis são necessárias para um bom ajuste do modelo. Entretanto, neste caso, verificou-se que o valor da *deviance* indica uma melhor bondade de ajuste.
