@@ -276,8 +276,7 @@ g1 + b1 + g2 + b2 +
     plot.tag = element_text(size = 12, hjust = 0, vjust = 0))
 ```
 
-
-Os gráficos confirmam as análises de simetria e variabilidade feitas anterioremente, acrescentando que em ambas as distribuições pode se verificar outliers, que por sua vez são mais frequentes na variável dos cromossomos anômalos. Tanto no gráfico do histograma como no gráfico do box-plot podemos verificar  que há uma assimetria à direita na distribuição das células totais, apresentando uma variabilidade maior acima da mediana.
+Os gráficos confirmam as análises de simetria e variabilidade feitas anteriormente. Alem disso, em ambas as distribuições, é possível observar outliers, sobretudo na variável dos cromossomos anômalos. 
 
 
 **Figura 2: Interação entre a fração de anomalias e a dosimetria aplicada observadas.**
@@ -292,7 +291,8 @@ rate<-dicentric$ca/dicentric$cells
 d1 <- with(dicentric, interaction.plot(doseamt, doserate, ca/cells, legend=TRUE, xlab= "Dose (hrad)", ylab="Fração de Anomalias", trace.label = "Adm. (rad/h)"))
 ```
 
-A figura 2 indica que o aumento tanto da dosagem total quanto da taxa de administração da radiação tem efeito positivo no aumento da fração de anomalias observado.
+A Figura 2 indica que o aumento tanto da dosagem total quanto da taxa de administração da radiação tem efeito positivo no aumento da fração de anomalias observado.
+
 
 
 
