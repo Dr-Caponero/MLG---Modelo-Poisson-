@@ -308,7 +308,7 @@ Utilizando a função de ligação canônica para a qual $\eta = log (\mu)$ e pr
 \   
 
 
-**Tabela 2: ANOVA do ajuste segundo o Modelo de Poisson aplicado.**
+**Tabela 2: Ajuste segundo o Modelo de Poisson aplicado.**
 
 
 ```{r}
@@ -326,14 +326,13 @@ summary(fit4)
 
 \   
 
-Nota-se que todos as variáveis do modelo foram significativas para o ajuste do modelo. Embora a variável taxa de administração (doserate) isoladamente apresentar uma significância abaixo dos níveis usuais, verifica-se que sua interação com a variável dose total (doseamt) é significativa em todos os níveis, sendo assim não é uma variável prescindível.
-Chama a atenção nessa análise, que o valor da *deviance* dos resíduos, embora bem abaixo do valor nulo é cerca do triplo do valor dos graus de liberdade, indicando que o ajuste ainda apresenta certa imprecisão.
+Todas os coeficientes, com exceção do coeficiente da variável taxa de administração (doserate) , foram significativas ao nível de 5\%. Apesar da variável doserate não ter sido significativa, a interação dessa variável com os níveis 2.5 e 5 da variável dose total (doseamt) foram significativas. Desse modo, há interação entre essas duas variáveis e, portanto, a variável doserate não pode ser retirada do modelo. Chama a atenção nessa análise, que o valor da *deviance* dos resíduos, embora bem abaixo do valor nulo é cerca do triplo do valor dos graus de liberdade, indicando que o ajuste ainda apresenta certa imprecisão.
 
+    
 \    
-\    
 
 
-**Tabela 3: ANOVA do ajuste segundo o Modelo de Poisson aplicado, em comparação com o teste qui-quadrado.**
+**Tabela 3: Ajuste segundo o Modelo de Poisson aplicado, em comparação com o teste qui-quadrado.**
 
 ```{r}
 #| echo: false
@@ -419,7 +418,7 @@ g1 + g2 +
     plot.tag = element_text(size = 12, hjust = 0, vjust = 0))
 ```
 
-A figura 3 corfirma a análise da tabela 2, uma vez que o lado direito da figura 3B evidencia a dificuldade de ajuste pelo modelo Poisson, já que nesses dados não há um decaimento observado.
+A Figura 3 confirma a análise da Tabela 2, uma vez que o lado direito da Figura 3B evidencia a dificuldade de ajuste pelo modelo Poisson, já que nesses dados não há um decaimento observado.
 
 
 
