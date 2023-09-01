@@ -80,7 +80,7 @@ Medir o desvio entre os valores observados e os previstos pelo modelo é fundame
 Essa avaliação é essencial para verificar se o modelo é apropriado para a situação em análise.
 
 Os resíduos, que são as diferenças entre os valores observados e os valores ajustados pelo modelo, são derivados do conceito de desvio.
-Esses resíduos podem fornecer insights valiosos sobre a qualidade do ajuste do modelo e a presença de padrões não capturados pelo modelo.
+Esses resíduos podem fornecer informações valiosas sobre a qualidade do ajuste do modelo e a presença de padrões não capturados pelo modelo.
 Através dos resíduos, é possível identificar possíveis discrepâncias entre as previsões do modelo e os dados reais.
 
 Além disso, a utilização de medidas de diagnóstico baseadas nos desvios e resíduos é essencial para identificar possíveis problemas com o modelo, como valores atípicos, falta de ajuste ou violações das suposições do modelo.
