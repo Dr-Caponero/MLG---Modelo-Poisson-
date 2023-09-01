@@ -277,7 +277,9 @@ g1 + b1 + g2 + b2 +
 ```
 
 
-Os gráficos confirmam as análises de simetria e variabilidade feitas anterioremente, acrescentando que em ambas as distribuições pode se verificar outliers, que por sua vez são mais frequentes na variável dos cromossomos anômalos. Do histograma pode verificar ainda certa descontinuidade no número de células medido, o que pode indicar certa limitação da técnica de amostragem ou ser devido ao reduzido número de replicatas.
+Os gráficos confirmam as análises de simetria e variabilidade feitas anterioremente, acrescentando que em ambas as distribuições pode se verificar outliers, que por sua vez são mais frequentes na variável dos cromossomos anômalos. Tanto no gráfico do histograma como no gráfico do box-plot podemos verificar 
+que há uma assimetria à direita na distribuição das células totais, apresentando uma variabilidade maior acima da mediana.
+
 
 \   
 \   
