@@ -296,16 +296,18 @@ Através da Figura 2, é possível notar que com o aumento da dosagem total e da
 
 
 
-### Ajuste inferencial
+### Modelo Linear Generalizado
 
 #### Função de ligação canônica
 
-Utilizando a função de ligação canônica para a qual $\eta = log (\mu)$ e procedendo um ajuste dos dados segundo um modelo poisson baseado em MLG temos o sequinte resutado descrito em uma tabela ANOVA.
+
+Os dados foram submetidos a uma análise de ajuste ao modelo linear generalizado com distribuição Poisson. Nesse contexto, a função de ligação utilizada foi $\eta = log (\mu)$. Os coeficientes obtidos a partir desse ajuste estão disponíveis na Tabela 2.
 
 \   
 
 
-**Tabela 2: Ajuste segundo o Modelo de Poisson aplicado.**
+**Tabela 2: Ajuste segundo o Modelo de Poisson com função de ligação $\eta = log (\mu)$.**
+
 
 
 ```{r}
@@ -318,14 +320,40 @@ dicentric$rate <- dicentric$ca/dicentric$cells
 
 fit4<-glm(ca~doserate + factor(doseamt) + doserate:factor(doseamt) 
           + offset(log(cells)),family = poisson, dicentric)
-summary(fit4)
+sum_fit4 <- summary(fit4)
+coefficients <- data.frame(
+  Variável = c("Intercepto", "doserate", "doseamt-2.5", "doseamt-5", "doserate:doseamt-2.5", "doserate:doseamt-5"),
+  Coeficientes = fit4$coefficients,
+  EP =  sum_fit4$coefficients[, "Std. Error"],
+  `Estatística z` = sum_fit4$coefficients[, "z value"],
+  `Pr(>|z|)` = sum_fit4$coefficients[, "Pr(>|z|)"]
+)
+
+coefficients|>
+  kbl(
+    #caption = "Sumarização dos Modelos Ajustados de Regressão Linear Simples - RLS.",
+    format.args=list(big.mark=".", decimal.mark=","),
+    digits = 3, align = "c", row.names = F, booktabs = T,
+    escape = FALSE,
+    col.names = c("Variável", "Coeficientes", "EP", "Estatística z", "Valor-p")
+  )|>
+  kable_styling(
+    full_width = F, position = 'center', 
+    latex_options = c("striped", "HOLD_position", "repeat_header", "scale_down")
+  )|>
+  column_spec(1, bold = T
+  )|>
+  kable_material()
+
 ```
 
 \   
 
-Todas os coeficientes, com exceção do coeficiente da variável taxa de administração (doserate) , foram significativas ao nível de 5\%. Apesar da variável doserate não ter sido significativa, a interação dessa variável com os níveis 2.5 e 5 da variável dose total (doseamt) foram significativas. Desse modo, há interação entre essas duas variáveis e, portanto, a variável doserate não pode ser retirada do modelo. Chama a atenção nessa análise, que o valor da *deviance* dos resíduos, embora bem abaixo do valor nulo é cerca do triplo do valor dos graus de liberdade, indicando que o ajuste ainda apresenta certa imprecisão.
+Todos os coeficientes, à exceção do coeficiente associado à variável taxa de administração (doserate), são significativos ao nível de 5%. Embora a variável doserate não tenha demonstrado significância por si só, é importante notar que suas interações com os níveis 2.5 e 5 da variável dose total (doseamt) foram estatisticamente significativas. Portanto, há evidência de interação entre essas duas variáveis, o que implica que a variável doserate não pode ser excluída do modelo.
 
-    
+Quanto ao deviance dos resíduos deste modelo, juntamente com seus graus de liberdade (73,629 e 21, respectivamente), observamos que embora o valor do deviance dos resíduos seja substancialmente inferior ao valor nulo (4753,004), ele é aproximadamente três vezes maior do que o número de graus de liberdade, indicando um ajuste não totalmente satisfatório.
+
+
 \    
 
 
