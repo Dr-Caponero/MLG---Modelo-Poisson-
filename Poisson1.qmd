@@ -380,7 +380,7 @@ data.frame(tidy(anova(fit4, test="Chisq"))) |>
 
 \   
 
-Observa-se novamente que todas as variáveis são necessárias para um bom ajuste do modelo. Entretanto, neste caso, verificou-se que o valor do *deviance* indica uma melhor bondade de ajuste.
+Observa-se novamente que todas as variáveis são necessárias para um bom ajuste do modelo. Entretanto, verificou-se que o variável variável dose total (doseamt) teve um grande impacto em diminuir o valor do *deviance*, indicando que é uma variável importantíssima para a melhor bondade de ajuste.
 
 \  
 
@@ -454,11 +454,11 @@ g1 + g2 +
 ```
 
 
-A Figura 3 reforça a conclusão obtida na Tabela 2, pois o gráfico à direita na Figura 3B claramente ilustra as limitações do modelo Poisson para se adequar aos dados, uma vez que não apresenta nenhum declínio visível.
+A Figura 3 reforça a conclusão obtida na Tabela 2, pois o gráfico à direita na Figura 3B claramente ilustra as limitações do modelo Poisson para se adequar aos dados, uma vez que não apresenta um declínio visível.
 
 
 
-**Figura 4: Interação entre a fração de anomalias e a dosimetria aplicada ajustadas.**
+**Figura 4: Interação entre a fração de anomalias estimada e a dosimetria aplicada**
 ```{r}
 #| echo: false
 #| warning: false
@@ -469,7 +469,8 @@ with(dicentric, interaction.plot(doseamt, doserate, ratefit, legend=TRUE, xlab= 
 
 ```
 
-Nota-se que a interação ajustada é mais previsível que aquela mostrada na Figura 2, referente aos dados observados.
+Nota-se que a interação para a fração de anomalias ajustada capta a tendência vista na Figura 2 para a interação com a fração de anomalias observada:  com o aumento da dosagem total e da taxa de
+administração da radiação há um aumento da fração de anomalias. o padrão de crescimento mais previsível que aquela mostrada na Figura 2, referente aos dados observados.
 
 
 ```{r}
@@ -516,7 +517,7 @@ td|>
 
 ```
 
-A tabela 4 mostra uma distribuição dos resíduos aproximada de uma distribuição normal.
+A Tabela 4 mostra que há uma clara distinção entre a média e a mediana dos resíduos, indicando falta de simetria (visto também pelo *skewness* distante de zero) o que, por sua vez, implica que os resíduos não estão seguindo uma distribuição normal padrão.
 
 
 **Figura 5: Análise do resíduo componente do desvio pelos valores ajustados.**
@@ -540,7 +541,8 @@ abline(h=c(-2,2))
 #| warning: false
 #| fig-height: 3.5
 #| fig-width: 7
-plot(td, xlab="Observações", ylab="Residuo componente do desvio", ylim=c(-2.5, 2.5))
+xy <- cbind(dicentric$ca, td)
+plot(xy, xlab="Observações", ylab="Residuo componente do desvio", ylim=c(-2.5, 2.5))
 abline(h=c(-2,2))
 ```
 
@@ -556,7 +558,8 @@ abline(h=c(-2,2))
 fit.model<-fit4
 source("envel_pois.R")
 ```
-Das figuras acima verifica-se que o modelo de Poisson ajustado pela função de ligação canônica não foi capaz de representar a variabilidade dos dados observados.
+
+O gráfico da Figura 5 indica o mesmo que o gráfico da Figura 6: que devido a quantidade de observações fora dos limites de -2 a 2, os resíduos do modelo Poisson podem estar fugindo da normalidade. Essa afirmação é reforçada no gráfico da Figura 7, pois os quantis do componente do desvio não está seguindo os quantis da normal padrão, tendo diversos pontos fora do envolope. Portanto, é possível concluir que o modelo de Poisson ajustado pela função de ligação canônica não foi capaz de representar a variabilidade dos dados observados.
 
 #### Função de ligação alternativa
 
@@ -602,7 +605,8 @@ coefficients|>
 ```
 \   
 
-Nota-se que todos as variáveis do modelo foram significativas para o ajuste do modelo. Embora a variável taxa de administração (doserate) isoladamente apresentar uma significância abaixo dos níveis usuais, verifica-se que sua interação com a variável dose total (doseamt) é significativa no nível 5 hrad, sendo assim não é uma variável prescindível.
+Novamente, a variável taxa de administração (doserate) e o nível 2.5 da variável  dose total não foram significativas ao nível de 5\%. Desse modo. Embora a variável taxa de administração (doserate) isoladamente não ser significativa, verifica-se que sua interação com a variável dose total (doseamt) é significativa, já que foi significativa no nível de 5\% para o níveis 2.5 e 5 da variável dose total, sendo assim é uma variável imprescindível no modelo.
+
 Chama a atenção nessa análise, que o valor da *deviance* dos resíduos, embora bem abaixo do valor nulo é muito superior ao valor dos graus de liberdade, indicando que o ajuste ainda apresenta certa imprecisão.
 
 \    
@@ -635,7 +639,9 @@ data.frame(tidy(anova(fit5, test="Chisq"))) |>
 ```
 \   
 
-Observa-se novamente que todas as variáveis são necessárias para um bom ajuste do modelo. Entretanto, neste caso, verificou-se que o valor da *deviance* indica uma melhor bondade de ajuste.
+Observa-se novamente que todas as variáveis são necessárias para um bom ajuste do modelo. Entretanto, neste caso, a variável dose total teve menos impacto no *deviance* neste modelo Poisson com função de ligação raiz quadrada que no modelo Poisson com função de ligação canônica.
+
+
 
 \  
 
@@ -708,7 +714,7 @@ g1 + g2 +
     plot.tag = element_text(size = 12, hjust = 0, vjust = 0))
 ```
 
-A figura 8 corfirma a análise da tabela 5, uma vez que o lado esquerdo da figura 7B evidencia a dificuldade de ajuste pelo modelo Poisson, já que nesses dados não há um decaimento observado.
+A Figura 8 confirma a análise da Tabela 5, uma vez que o lado esquerdo da Figura 7B evidencia a dificuldade de ajuste pelo modelo Poisson, já que nesses dados não há um decaimento relevante observado.
 
 
 
@@ -723,7 +729,7 @@ with(dicentric, interaction.plot(doseamt, doserate, ratefit2, legend=TRUE, xlab=
 
 ```
 
-Nota-se que a interação ajustada é mais previsível que aquela mostrada na Figura 2, referente aos dados observados.
+É possível observar assim como no primerio modelo, a fração de anomalias estimadas indicou tendência de crescimento a partir do momento em há um crescimento da taxa de dose administrada e da quantidade de dose total aplciada.
 
 
 ```{r}
@@ -770,7 +776,12 @@ td|>
 
 ```
 
-A tabela 7 mostra uma distribuição dos resíduos bastante aproximada de uma distribuição normal.
+Podemos notar que na Tabela 7, apesar de que a diferença entre a média e mediana seja menor para esse modelo do que o modelo anterior, ele ainda apresenta um valor de *skewness* relativamente alto, o que indica também assimetria e fuga da normalidade.
+
+A Tabela 7 mostra uma distribuição dos resíduos bastante aproximada de uma distribuição normal.
+
+A Tabela 4 mostra que há uma clara distinção entre a média e a mediana dos resíduos, indicando falta de simetria o que, por sua vez, implica que os resíduos não estão seguindo uma distribuição normal padrão.
+
 
 \  
 
@@ -795,6 +806,7 @@ abline(h=c(-2,2))
 #| warning: false
 #| fig-height: 3.5
 #| fig-width: 7
+xy <- cbind(dicentric$ca, td)
 plot(td, xlab="Observações", ylab="Residuo componente do desvio", ylim=c(-2.5, 2.5))
 abline(h=c(-2,2))
 ```
@@ -813,7 +825,13 @@ source("envel_pois.R")
 Das figuras acima verifica-se que o modelo de Poisson ajustado pela função de ligação alternativa também não foi capaz de representar a variabilidade dos dados observados.
 
 
+Nos gráficos da Figura 10 e 11, é possível ver que há diversos pontos fora dos limites de -2 a 2, desse modo, os resíduos do modelo Poisson podem estar fugindo da normalidade. No gráfico da Figura 12, é notável que os quantis dos resíduos não estão seguindo os quantis da normal padrão, tendo a maior parte dos pontos fugindo do envelope. Portato, conclui-se que o modelo Poissson ajustado pela função de ligação raiz quadrada não foi capaz de representar a variabilidade dos dados observados
+
+
+indica o mesmo que o gráfico da Figura 6: que devido a quantidade de observações fora dos limites de -2 a 2, os resíduos do modelo Poisson podem estar fugindo da normalidade. Essa afirmação é reforçada no gráfico da Figura 7, pois os quantis do componente do desvio não está seguindo os quantis da normal padrão, tendo diversos pontos fora do envolope. Portanto, é possível concluir que o modelo de Poisson ajustado pela função de ligação canônica não foi capaz de representar a variabilidade dos dados observados.
+
+
+
 ## Conclusões
 
-Verificou-se que a proposta de identificar o processo de contagens de células com anomalias após o tratamento de radiação com o modelo de Poisson, não obteve um bom ajuste mesmo com a utilização da função de ligação canônica (logarítimica) ou de uma função de ligação alternativa (raiz-quatrática).
-Uma fonte desta dificuldade deste ajuste é a aleatoriedade da quantidade de células totais amostradas que introduz uma variabilidade que o modelo não é capaz de explicar. Um possível modelo com melhor ajuste seria baseado na distribuição Beta, que por sua vez ajustaria a fração de células comprometidas e não a contagem delas.
+Verificou-se que a proposta de identificar o processo de contagens de cromossomos com anomalias após o tratamento de radiação com o modelo de Poisson, não obteve um bom ajuste nem com a utilização da função de ligação canônica (logarítimica) e nem com a  função de ligação alternativa (raiz-quatrática). Desse modo, o modelo Poisson não foi capaz de explicar a variabilidade da variável quantidade de cromossomos anômalos. Isso pode ter se dado em razão da grande variabilidade, sendo muito maior que a média, violando a necessidade que o modelo Poisson tem de que a sua média seja igual a variância.
