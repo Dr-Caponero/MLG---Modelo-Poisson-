@@ -1,6 +1,6 @@
 ---
 title: "Relatório: Modelo Poisson"
-author: "Jeff Caponero, Michel Miler Rocha dos Santos e Camille Menezes dos Santos"
+author: "Camille Menezes dos Santos, Jeff Caponero e Michel Miler Rocha dos Santos"
 format:
     pdf:
       toc: true
@@ -216,7 +216,7 @@ g1 <- dicentric|>
       decimal.mark = ","
     )) +
   labs(
-    title = "Células Anômalas",
+    title = "Número de Anomalias",
     x = "Quantidade",
     y = "Densidade"
   )+theme_minimal(base_size = 7.5)
@@ -225,10 +225,11 @@ b1 <- dicentric|>
   ggplot(aes(y = ca)) +
   geom_boxplot(col="darkblue", fill="skyblue", alpha = 0.5)+
   labs(
-    title = "Células Anômalas",
+    title = "Número de Anomalias",
     x = "",
     y = "Densidade"
-  )+theme_minimal(base_size = 7.5)
+  )+ scale_x_discrete(breaks = NULL)+
+  theme_minimal(base_size = 7.5)
 
 
 g2 <- dicentric|>
@@ -263,7 +264,9 @@ b2 <- dicentric|>
     title = "Células Totais",
     x = "",
     y = "Densidade"
-  )+theme_minimal(base_size = 7.5)
+  )+
+  scale_x_discrete(breaks = NULL)+
+  theme_minimal(base_size = 7.5)
 
 g1 + b1 + g2 + b2 + 
   plot_layout(ncol = 2) + 
@@ -306,7 +309,6 @@ Os dados foram submetidos a uma análise de ajuste ao modelo linear generalizado
 \   
 
 
-**Tabela 2: Ajuste segundo o Modelo de Poisson com função de ligação $\eta = log (\mu)$.**
 ```{r}
 #| echo: false
 #| warning: false
@@ -328,6 +330,7 @@ coefficients <- data.frame(
 
 coefficients|>
   kbl(
+    caption = "Ajuste segundo o Modelo de Poisson com função de ligação canônoca.",
     format.args=list(big.mark=".", decimal.mark=","),
     digits = 3, align = "c", row.names = F, booktabs = T,
     escape = FALSE,
@@ -335,10 +338,11 @@ coefficients|>
   )|>
   kable_styling(
     full_width = F, position = 'center', 
-    latex_options = c("striped", "HOLD_position", "repeat_header", "scale_down")
+    latex_options = c("striped", "HOLD_position", "repeat_header")
   )|>
   column_spec(1, bold = T
   )|>
+  
   kable_material()
 
 ```
@@ -353,8 +357,6 @@ Quanto ao deviance dos resíduos deste modelo, juntamente com seus graus de libe
 \    
 
 
-**Tabela 3: Ajuste segundo o Modelo de Poisson aplicado, em comparação com o teste qui-quadrado.**
-
 ```{r}
 #| echo: false
 #| warning: false
@@ -363,6 +365,7 @@ Quanto ao deviance dos resíduos deste modelo, juntamente com seus graus de libe
 
 data.frame(tidy(anova(fit4, test="Chisq"))) |>
   kbl(
+    caption = "Ajuste segundo o Modelo de Poisson aplicado, em comparação com o teste qui-quadrado.",
     format.args=list(big.mark=".", decimal.mark=","),
     digits = 3, align = "c", row.names = F, booktabs = T,
     escape = FALSE,
@@ -370,7 +373,7 @@ data.frame(tidy(anova(fit4, test="Chisq"))) |>
   )|>
   kable_styling(
     full_width = F, position = 'center', 
-    latex_options = c("striped", "HOLD_position", "repeat_header", "scale_down")
+    latex_options = c("striped", "HOLD_position", "repeat_header")
   )|>
   column_spec(1, bold = T
   )|>
@@ -502,7 +505,7 @@ td|>
     transpose = T
   )|>
     kbl(
-    caption = "Tabela 4: Medidas resumo dos resíduos",
+    caption = "Medidas resumo dos resíduos",
     digits = 2,
     format.args=list(big.mark=".", decimal.mark=","),
     align = "c", row.names = T, booktabs = T
@@ -532,7 +535,7 @@ plot(xy, xlab="Valores Ajustados", ylab="Residuo componente do desvio", ylim=c(-
 abline(h=c(-2,2))
 ```
 
-\   
+\newpage   
 
 **Figura 6: Análise do resíduo componente do desvio pelos valores observados.**
 
@@ -568,7 +571,6 @@ Os dados foram submetidos novamente ao ajuste do modelo linear generalizado com 
 \   
 
 
-**Tabela 5: Ajuste segundo o Modelo de Poisson com função de ligação $\eta = \sqrt(\mu)$.**
 ```{r}
 #| echo: false
 #| warning: false
@@ -589,6 +591,7 @@ coefficients <- data.frame(
 
 coefficients|>
   kbl(
+    caption = "Ajuste segundo o Modelo de Poisson com função de ligação alternativa",
     format.args=list(big.mark=".", decimal.mark=","),
     digits = 3, align = "c", row.names = F, booktabs = T,
     escape = FALSE,
@@ -596,7 +599,7 @@ coefficients|>
   )|>
   kable_styling(
     full_width = F, position = 'center', 
-    latex_options = c("striped", "HOLD_position", "repeat_header", "scale_down")
+    latex_options = c("striped", "HOLD_position", "repeat_header")
   )|>
   column_spec(1, bold = T
   )|>
@@ -613,7 +616,6 @@ Chama a atenção nessa análise, que o valor da *deviance* dos resíduos, embor
 \    
 
 
-**Tabela 6: Ajuste segundo o Modelo de Poisson aplicado, em comparação com o teste qui-quadrado.**
 
 ```{r}
 #| echo: false
@@ -623,6 +625,7 @@ Chama a atenção nessa análise, que o valor da *deviance* dos resíduos, embor
 
 data.frame(tidy(anova(fit5, test="Chisq"))) |>
   kbl(
+    caption = "Ajuste segundo o Modelo de Poisson aplicado, em comparação com o teste qui-quadrado.",
     format.args=list(big.mark=".", decimal.mark=","),
     digits = 3, align = "c", row.names = F, booktabs = T,
     escape = FALSE,
@@ -630,7 +633,7 @@ data.frame(tidy(anova(fit5, test="Chisq"))) |>
   )|>
   kable_styling(
     full_width = F, position = 'center', 
-    latex_options = c("striped", "HOLD_position", "repeat_header", "scale_down")
+    latex_options = c("striped", "HOLD_position", "repeat_header")
   )|>
   column_spec(1, bold = T
   )|>
@@ -761,7 +764,7 @@ td|>
     transpose = T
   )|>
     kbl(
-    caption = "Tabela 7: Medidas resumo dos resíduos",
+    caption = "Medidas resumo dos resíduos",
     digits = 2,
     format.args=list(big.mark=".", decimal.mark=","),
     align = "c", row.names = T, booktabs = T
